@@ -8,9 +8,11 @@
     - Nutzerdaten
         - Name
         - Email
-    - Wohnungen
 - Wohnung
     - Wohnungsdaten
+    	- Ort
+     	- Betten 
+    - Besitzer
 - Buchungen
 	- Mieter
 	- Wohnung
@@ -23,8 +25,14 @@
 - Vermieter geben Mierter Bewertungen
 
 ## GUI
-- Suche nach Orten
-- Wohnung buchen können
-- Bewerungen machen
-
-
+- Login Screen
+	- unterscheidung Vermieter und Mieter 
+- Mieter:
+	- Wohnungen suchen
+ 	- Wohnung buchen können
+ 	- eigene Buchungen anzeigen
+- Vermieter
+	- neue Wohnungen listen
+ 	- Wohnungen verwalten
+  	- Buchungen anzeigen
+  
