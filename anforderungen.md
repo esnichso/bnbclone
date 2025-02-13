@@ -20,9 +20,11 @@
 
 ## Zusammenhang
 - Vermieter haben Wohnungen
+- Mieter suchen Wohnungen
 - Mieter buchen Wohnungen
-- Mieter geben Wohnung Bewertung
-- Vermieter geben Mierter Bewertungen
+- wenn Zeit:
+	- Mieter geben Wohnung Bewertung ??
+	- Vermieter geben Mieter Bewertungen ??
 
 ## GUI
 - Login Screen
