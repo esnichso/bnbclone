@@ -22,6 +22,7 @@
 - Vermieter haben Wohnungen
 - Mieter suchen Wohnungen
 - Mieter buchen Wohnungen
+	- Kontrolle ob schon belegt 
 - wenn Zeit:
 	- Mieter geben Wohnung Bewertung ??
 	- Vermieter geben Mieter Bewertungen ??
