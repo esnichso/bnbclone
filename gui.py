@@ -1,16 +1,29 @@
 from tkinter import * 
 from tkinter import ttk
 
-root = Tk()
-root.title("BnB Clone") # Titel setzen
+
+
+class App:
+    def __init__(self):
+        self.root = Tk()
+        self.root.title("BnB Clone") # Titel setzen
+
+        self.loginpage = LoginPage(self.root, self)
+        self.mieterpage = MieterPage(self.root, self)
+    
+    def run(self):
+        self.root.mainloop()
 
 
 class LoginPage:
-    def __init__(self, master):
+    def __init__(self, master, app):
         master.geometry("350x500")
         self.master = master
+        self.app = app
+        self.total = ttk.Frame(self.master)
+        self.total.grid()
 
-        self.firstFrame = ttk.Frame(self.master)    
+        self.firstFrame = ttk.Frame(self.total)    
         
         self.firstBanner = ttk.Label(self.firstFrame, 
                                      text="Login Page"
@@ -28,13 +41,13 @@ class LoginPage:
                                           command=lambda: self.showLogin(mieter=False)
                                           )
         self.vermieterButton.grid(row=1, column=2)
-        """
+        
         self.closeButton = ttk.Button(self.firstFrame, 
                                       text="Schließen", 
-                                      command=self.firstFrame.grid_forget
+                                      command=self.total.grid_forget
                                       )
         self.closeButton.grid(row=2, column=1)
-        """
+        
 
         self.firstFrame.grid()
 
@@ -43,7 +56,7 @@ class LoginPage:
         print(f"Einloggen als {'Mieter' if mieter else 'Vermieter'}")
         self.firstFrame.grid_forget()
 
-        self.loginFrame = ttk.Frame(self.master)
+        self.loginFrame = ttk.Frame(self.total)
 
         self.loginBanner = ttk.Label(self.loginFrame, 
                                       text=f"Einloggen als {'Mieter' if mieter else 'Vermieter'}"
@@ -54,7 +67,7 @@ class LoginPage:
         self.EmailField.grid(row=1, column=0)
         
 
-        self.loginButton = ttk.Button(self.loginFrame, text="Anmelden", command=lambda: print(self.EmailField.get())) # anmelde funktion
+        self.loginButton = ttk.Button(self.loginFrame, text="Anmelden", command=lambda: self.anmelden(mieter)) # anmelde funktion
         self.loginButton.grid(row=1, column=1)
 
         self.backButton = ttk.Button(self.loginFrame, 
@@ -65,10 +78,51 @@ class LoginPage:
 
         self.loginFrame.grid()
 
+    def anmelden(self, mieter):
+        print(self.EmailField.get())
+        print("Anmelden als", "Mieter" if mieter else "Vermiter")
+        self.loginFrame.grid_forget()
+        self.firstFrame.grid()
+        self.total.grid_forget()
+        if mieter:
+            self.app.mieterpage.total.grid()
+            self.app.mieterpage.startpage.grid()
+
+
+class MieterPage:
+    def __init__(self, master, app):
+        self.master = master
+        self.app = app
+        self.total = ttk.Frame(self.master)
         
+        self.startpage = ttk.Frame(self.total)
+        self.startpage.grid()
+        self.suchPage = ttk.Frame(self.total)
 
-    
+        self.startpageBanner = ttk.Label(self.startpage,
+                                text="Eingeloggt als Mieter")
+        self.startpageBanner.grid()
 
-page = LoginPage(root)
+        self.startpageSucheButton = ttk.Button(self.startpage,
+                                               text="Suche",
+                                               command= lambda: [self.startpage.grid_forget(), self.suchPage.grid()])
+        self.startpageSucheButton.grid()
 
-root.mainloop()
+        self.startpageAbmeldeButton = ttk.Button(self.startpage, 
+                                     text="Abmelden", 
+                                     command= lambda: [self.startpage.grid_forget(), self.total.grid_forget(), app.loginpage.total.grid()]
+                                     )
+        self.startpageAbmeldeButton.grid()
+
+        self.suchpageBanner = ttk.Label(self.suchPage,
+                                        text="Suche")
+        self.suchpageBanner.grid()
+
+        self.suchPageBackButton = ttk.Button(self.suchPage, 
+                                     text="Zurück", 
+                                     command= lambda: [self.suchPage.grid_forget(),  self.startpage.grid()]
+                                     )
+        self.suchPageBackButton.grid()
+
+app = App()
+app.run()
