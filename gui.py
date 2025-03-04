@@ -12,10 +12,11 @@ class App:
 
         self.loginpage = LoginPage(self.root, self)
         self.mieterpage = MieterPage(self.root, self)
+        self.vermieterpage = VermieterPage(self.root, self)
     
     def run(self):
         self.root.mainloop()
-
+    
 
 class LoginPage:
     def __init__(self, master, app):
@@ -43,15 +44,40 @@ class LoginPage:
                                           command=lambda: self.showLogin(mieter=False)
                                           )
         self.vermieterButton.grid(row=1, column=2)
+
+        ttk.Button(self.firstFrame, text="Neu Registirien", command= lambda: [self.firstFrame.grid_forget(), self.registerPage()]).grid(row=2, column=1)
         
         self.closeButton = ttk.Button(self.firstFrame, 
                                       text="Schließen", 
                                       command=self.total.grid_forget
                                       )
-        self.closeButton.grid(row=2, column=1)
+        self.closeButton.grid(row=3, column=1)
         
 
         self.firstFrame.grid()
+
+    def registerPage(self):
+        self.firstBanner.grid_forget()
+        self.registerFrame = ttk.Frame(self.total)
+        self.registerFrame.grid()
+
+        ttk.Label(self.registerFrame, text="Registrieren")
+        mieterState = BooleanVar()
+        ttk.Radiobutton(self.registerFrame, text="Mieter", variable=mieterState, value=True).grid(row=1, column=0)
+        ttk.Radiobutton(self.registerFrame, text="Vermieter", variable=mieterState, value=False).grid(row=1, column=1)
+
+        ttk.Label(self.registerFrame, text="Email").grid(row=2, column=0)
+        self.emailEntry = ttk.Entry(self.registerFrame)
+        self.emailEntry.grid(row=2, column=1)
+
+        ttk.Label(self.registerFrame, text="Name").grid(row=3, column=0)
+        self.nameEntry = ttk.Entry(self.registerFrame)
+        self.nameEntry.grid(row=3, column=1)    
+
+        x = lambda d: self.app.database.addMieter(d) if mieterState.get() else self.app.database.addVermieter(d)
+
+        ttk.Button(self.registerFrame, text="Account erstellen", command= lambda: [print({"name": self.nameEntry.get(), "email": self.emailEntry.get()}), x({"name": self.nameEntry.get(), "email": self.emailEntry.get()}), self.registerFrame.grid_forget(), self.showLogin(mieterState.get())]).grid() 
+
 
 
     def showLogin(self, mieter):
@@ -98,7 +124,63 @@ class LoginPage:
                 self.total.grid_forget()
                 self.app.mieterpage.total.grid()
                 self.app.mieterpage.startpage.grid()
+        else:
+            res = self.app.database.select(f"SELECT * FROM Vermieter WHERE Email == '{self.EmailField.get()}'")
+            if res == []:
+                print("User existiert nicht")
+                ttk.Label(self.loginFrame, text="falsche Email").grid()
+            else:
+                global vermieterID
+                vermieterID = res[0]
+                print(vermieterID)
+                self.loginFrame.grid_forget()
+                self.firstFrame.grid()
+                self.total.grid_forget()
+                self.app.vermieterpage.total.grid()
+                self.app.vermieterpage.startpage.grid()
+                
+                
 
+
+class VermieterPage:
+    def __init__(self, master, app):
+        self.master = master
+        self.app = app
+        self.total = ttk.Frame(self.master)
+        
+
+        self.mainpage()
+
+    def mainpage(self):
+        
+        self.startpage = ttk.Frame(self.total)
+        self.startpage.grid()
+        ttk.Label(self.startpage, text="Eingeloogt als Vermieter").grid()
+        ttk.Button(self.startpage, text="Neue Wohnung listen", command = lambda: [self.startpage.grid_forget(), self.createNewListingPage()]).grid()
+        ttk.Button(self.startpage, text="Abmelden", command= lambda: [self.total.grid_forget(), self.app.loginpage.total.grid()]).grid()
+
+    def createNewListingPage(self):
+        self.listingPage = ttk.Frame(self.total)
+        self.listingPage.grid()
+
+        ttk.Label(self.listingPage, text="Stadt").grid(row=0, column=0)
+        self.stadtEntry = ttk.Entry(self.listingPage)
+        self.stadtEntry.grid(row=0, column=1)
+
+        ttk.Label(self.listingPage, text="Land").grid(row=1, column=0)
+        self.landEntry = ttk.Entry(self.listingPage)
+        self.landEntry.grid(row=1, column=1)
+
+        ttk.Label(self.listingPage, text="Betten").grid(row=2, column=0)
+        self.bettenEntry = ttk.Entry(self.listingPage)
+        self.bettenEntry.grid(row=2, column=1)
+
+
+        ttk.Button(self.listingPage, text="Erstellen", command= lambda: [self.app.database.addWohnung({"stadt": self.stadtEntry.get(), "land": self.landEntry.get(), "betten": self.bettenEntry.get(), "vid": vermieterID}), self.listingPage.grid_forget(), self.startpage.grid()]).grid()
+        ttk.Button(self.listingPage, text="Abbrechen", command= lambda: [self.listingPage.grid_forget(), self.startpage.grid()]).grid()
+        
+        
+        
 
 class MieterPage:
     def __init__(self, master, app):
@@ -209,7 +291,7 @@ class Buchungsfenster(Toplevel):
         ttk.Label(self, text=f"Apartment Nr. {d[0]}\n{d[2]}, {d[1]}\nBetten: {d[3]}\nVermietet von {d[4]}").grid()
         datum = ttk.Entry(self)
         datum.grid()
-        ttk.Button(self, text="Buchen", command= lambda: print(datum.get())).grid()
+        ttk.Button(self, text="Buchen", command= lambda: print(f"MieterID: {mieterID}\nWohnungsID: {wid}\nDatum: {datum.get()}")).grid()
 
 app = App("datenbank/db.sqlite")
 app.run()
