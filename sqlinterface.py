@@ -28,11 +28,11 @@ class Database:
        res = self.cursor.execute(query).fetchall()
        return [i[0] for i in res]
     
-    def addVermieter(self, data=(str, str)):
+    def addVermieter(self, data={str, str}):
         self.cursor.execute(f"INSERT INTO \"main\".\"Vermieter\" (\"Name\", \"Email\") VALUES (\'{data['name']}\', \'{data['email']}\')")
         self.connection.commit()
 
-    def addMieter(self, data=(str, str)):
+    def addMieter(self, data={str, str}):
         self.cursor.execute(f"INSERT INTO \"main\".\"Mieter\" (\"Name\", \"Email\") VALUES (\'{data['name']}\', \'{data['email']}\')")
         self.connection.commit()
 
