@@ -21,8 +21,11 @@ class Database:
             query += " AND Wohnungen.betten >= " + betten + ""
         return self.cursor.execute(query).fetchall()
 
-    def listBuchungen(self):
-        return self.cursor.execute("SELECT Buchungen.BuchungsID, Mieter.MieterID, Mieter.name, Wohnungen.WID, Buchungen.Datum FROM Buchungen, Mieter, Wohnungen WHERE Buchungen.WohnungsID = Wohnungen.WID").fetchall()
+    def listBuchungen(self, mid):
+        return self.cursor.execute(f"SELECT Wohnungen.Stadt, Wohnungen.Land, Buchungen.Datum FROM Buchungen, Mieter, Wohnungen WHERE Buchungen.WohnungsID = Wohnungen.WID AND Mieter.MieterID == {mid}").fetchall()
+
+    def listBuchungenVermieter(self, wid):
+        return self.cursor.execute(f"SELECT Wohnungen.Stadt, Wohnungen.Land, Buchungen.Datum FROM Buchungen, Vermieter, Wohnungen WHERE Buchungen.WohnungsID = Wohnungen.WID AND Wohnungen.VermieterID = Vermieter.VermieterID AND Vermieter.VermieterID == {wid}").fetchall()
 
     def select(self, query):
        res = self.cursor.execute(query).fetchall()
